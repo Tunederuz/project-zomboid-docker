@@ -23,14 +23,10 @@ NEED_UPDATE=0
 #                                   #
 #####################################
 
-if [ "$FORCEUPDATE" = "1" ]; then
-  echo "FORCEUPDATE enabled"
-  NEED_UPDATE=1
-elif [ -z "$(ls -A "$STEAMAPPDIR" 2>/dev/null)" ]; then
+if [ -z "$(ls -A "$STEAMAPPDIR" 2>/dev/null)" ]; then
   echo "Install directory empty, downloading server"
 
-  set -x \
-  && mkdir -p "${STEAMAPPDIR}" \
+  mkdir -p "${STEAMAPPDIR}" \
   && chown -R "${USER}:${USER}" "${STEAMAPPDIR}" \
 
   NEED_UPDATE=1
