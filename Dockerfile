@@ -7,14 +7,8 @@ LABEL maintainer="daniel.carrasco@electrosoftcloud.com"
 
 ENV STEAMAPPID=380870
 ENV STEAMAPP=pz
-ENV STEAMAPPDIR="${HOMEDIR}/${STEAMAPP}-dedicated"
 # Fix for a new installation problem in the Steamcmd client
 ENV HOME="${HOMEDIR}"
-
-# Receive the value from docker-compose as an ARG
-ARG STEAMAPPBRANCH=""
-# Promote the ARG value to an ENV for runtime
-ENV STEAMAPPBRANCH=$STEAMAPPBRANCH
 
 # Install required packages
 RUN apt-get update \
