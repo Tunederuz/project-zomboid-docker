@@ -1,10 +1,15 @@
+# Credits
+Main project from https://github.com/Danixu/project-zomboid-server-docker
+
+Dev branch support from https://github.com/Diagounal/project-zomboid-server-docker
+
 # Project Zomboid dedicated server container
 
-This Dockerfile downloads the Project Zombie dedicated server using SteamCMD. Will allow you to deploy with ease a server in Kubernetes, Docker...
+This Dockerfile will pre-configure Project Zombie dedicated server using SteamCMD.
 
 The ready to use image is available here:
 
-https://hub.docker.com/r/danixu86/project-zomboid-dedicated-server
+https://hub.docker.com/r/thunderzstrike/project-zomboid
 
 > **Note:** If you want to play **Build 42** multiplayer, you must set the `STEAMAPPBRANCH` [environment variable](#environment-variables) to `unstable`.
 
@@ -14,55 +19,63 @@ https://hub.docker.com/r/danixu86/project-zomboid-dedicated-server
 
 This dockerfile converts some env variables to arguments in the server command, allowing to configure it. The image supports the following environment variables:
 
-`ADMINUSERNAME:` Sets the administrator username, otherwise `admin` will be used.
+**Required variables**
 
-`ADMINPASSWORD:` Sets or changes the admin password. Is mandatory at first startup or will fail. I recommend to remove it once the server is started because the server logs every argument in clear text (if doesn't cares, you can leave it).
+`ADMINPASSWORD`: Sets or changes the admin password. Is mandatory at first startup or will fail. As the server logs every arguments in plain text, it's up to you to remove it or not after first run.
 
-`PASSWORD:` Sets or changes server password. Is optional.
+**Optional variables**
 
-`CACHEDIR:` Set the folder where the data will be stored. By default the server stores the data in the Zomboid folder in home directory (/home/steam/Zomboid). Is recommended to store this data into a persistent volume to keep the server state.
+`ADMINUSERNAME`: Sets the administrator username. 
+>Default: `admin`.
 
-`DEBUG:` Enable the debug mode in server
+`PASSWORD`: Sets or changes server password.
 
-`FORCEUPDATE:` Force a server update on every start. This process can be slow if the image is old.
+`CACHEDIR`: Set the folder where the save data will be stored. You'll usually want to store that in a persistant volume. 
+>Default: `/home/steam/Zomboid`
 
-`FORCESTEAMCLIENTSOUPDATE:` Forcibly update the steamclient.so libraries in the pz-dedicated directory before starting the server. May help with Workshop item downloads. Do not set if everything works fine.
+`DEBUG`: Enable the debug mode in server.
 
-`IP:` Set the interface IP where the server will listen. By default all the interfaces.
+`FORCEUPDATE`: Force a server update on every start. Updates main game and workshop items.
 
-`MEMORY:` Amount of memory to use in the server JVM (units can be used, for example 2048m). By default 8096m.
+`FORCESTEAMCLIENTSOUPDATE`: Forcibly update the steamclient.so libraries in the Project Zomboid installation directory before starting the server. May help with Workshop item downloads. Only if you encounter issues.
 
-`MODFOLDERS`: Mod folders to use to load the game mods. Allowed options are workshop, steam, and mods. Options must be separated by comma, for example: workshop,steam,mods
+`IP`: Set the interface IP where the server will listen. It will listen to all interfaces if omitted.
 
-`NOSTEAM:` Starts the server in NoSteam mode, allowing to non steam users to connect.
+`MEMORY`: Amount of memory to use in the server JVM. 
+>Default: `8192m` (8GB)
 
-`PORT:` Set the server port. By default 16261
+`MODFOLDERS`: Mod folders to use to load the game mods. Allowed options are workshop, steam, and mods. Options must be separated by comma without spaces.
 
-`SERVERNAME:` Set the server name, which allows you to have multiple server versions. Changing the name will create a new server data, so current progress will not be available. Also will not be lost, just reverting the server name change will load it again. **NOTE: Don't use spaces or special characters or admin user will fail**
+`NOSTEAM`: Starts the server in NoSteam mode, allowing to non steam users to connect.
 
-`SERVERPRESET:` Set the new servers default preset. If not set, the default is apocalypse. Allowed options are Apocalypse, Beginner, Builder, FirstWeek, SixMonthsLater, Survival and Survivor.
+`PORT`: Set the server port. 
+>Default: `16261`
 
-`SERVERPRESETREPLACE:` Replace the server preset by the one seted by the SERVERPRESET variable. By default false to avoid to replace custom configurations once the server has started.
+`SERVERNAME`: Set the server name, which allows you to have multiple server versions. Changing the name will create a new server data, so current progress will not be available. Also will not be lost, just reverting the server name change will load it again. **NOTE: Don't use spaces or special characters or admin user will fail**
+> Default: `pz-dedicated-server`
 
-`SOFTRESET:` Performs a soft reset in the server. More info in the Soft Reset section.
+`SERVERPRESET`: Set the new servers default preset. Allowed options are Apocalypse, Beginner, Builder, FirstWeek, SixMonthsLater, Survival and Survivor. 
+>Default: `Apocalypse`
 
-`STEAMPORT1 & STEAMPORT2:` Sets the two additional ports required for steam to work. I guess that those ports are UDP, but it can be also TCP.
+`SERVERPRESETREPLACE`: Replace the server preset by the one set by the SERVERPRESET variable. By default false to avoid to replace custom configurations once the server has started.
 
-`STEAMVAC:` Enables or disables de SteamVac protection in server
+`SOFTRESET`: Performs a soft reset in the server. More info in the Soft Reset section.
 
-`WORKSHOP_IDS:` Semicolon separated list of Workshop IDs to install to the server. Leaving this empty will clear any existing value!
+`STEAMPORT1` & `STEAMPORT2`: Sets the two additional ports required for steam to work. I guess that those ports are UDP, but it can be also TCP.
 
-`MOD_IDS:` Semicolon separated list of Mod IDs to install to the server
+`STEAMVAC`: Enables or disables de SteamVac protection in server.
 
-`LANG:` This env variable will set the container locales, which will be used by the pz server to set the language. Example (en_EN.UTF-8, es_ES.UTF-8...)
+`WORKSHOP_IDS`: Semicolon separated list of Workshop IDs to install to the server. Leaving this empty will clear any existing value!
 
-`STEAMAPPBRANCH:` Sets the Steam beta branch to download (e.g., `unstable`). If not set, the stable branch is used.
+`MOD_IDS`: Semicolon separated list of Mod IDs to install to the server.
+
+`LANG`: This env variable will set the container locales, which will be used by the pz server to set the language. Example (en_EN.UTF-8, es_ES.UTF-8...).
+
+`STEAMAPPBRANCH`: Sets the Steam beta branch to download (e.g., `unstable`). If not set, the stable branch is used.
 
 Mods will install on second server start
 
 Maps are added on third server start, after mods are added
-
-
 
 ## Soft Reset
 
@@ -129,5 +142,3 @@ In the scripts folders there are three scripts:
 
 * entry.sh: The script used in the image to start the server
 * search_folder.sh: Script to search through mod folders for any maps 
-* update_forum.sh: Check the posts in the forum for updates and create a new image if a new version exists. This script was made because looks like the official page doesn't update the version as soon it is out.
-* uodate_web.sh: Check the version in the official page and create a new image if a new version exists
