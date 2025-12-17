@@ -2,11 +2,7 @@
 
 cd ${STEAMAPPDIR}
 
-#####################################
-#                                   #
-# Force an update if the env is set #
-#                                   #
-#####################################
+echo "Project Zomboid container starting..."
 
 if [ "${FORCESTEAMCLIENTSOUPDATE}" == "1" ]; then
   echo "FORCESTEAMCLIENTSOUPDATE variable is set, updating steamclient.so in Zomboid's server"
@@ -14,9 +10,39 @@ if [ "${FORCESTEAMCLIENTSOUPDATE}" == "1" ]; then
   cp "${STEAMCMDDIR}/linux32/steamclient.so" "${STEAMAPPDIR}/steamclient.so"
 fi
 
-if [ "${FORCEUPDATE}" == "1" ]; then
-  echo "FORCEUPDATE variable is set, so the server will be updated right now"
-  bash "${STEAMCMDDIR}/steamcmd.sh" +force_install_dir "${STEAMAPPDIR}" +login anonymous +app_update "${STEAMAPPID}" ${STEAMAPPBRANCH:+-beta "$STEAMAPPBRANCH"} validate +quit
+NEED_UPDATE=0
+
+
+#####################################
+#                                   #
+# Force an update if the env is set #
+# Or if directory is empty          #
+#                                   #
+#####################################
+
+if [ "$FORCEDUPDATE" = "1" ]; then
+  echo "FORCEDUPDATE enabled"
+  NEED_UPDATE=1
+elif [ -z "$(ls -A "$STEAMAPPDIR" 2>/dev/null)" ]; then
+  echo "Install directory empty, downloading server"
+
+  set -x \
+  && mkdir -p "${STEAMAPPDIR}" \
+  && chown -R "${USER}:${USER}" "${STEAMAPPDIR}" \
+
+  NEED_UPDATE=1
+else
+  echo "Existing server files found, skipping download"
+fi
+
+if [ "$NEED_UPDATE" = "1" ]; then
+  echo "⬇Running SteamCMD update"
+
+  bash "${STEAMCMDDIR}/steamcmd.sh" \
+  +force_install_dir "${STEAMAPPDIR}" \
+  +login anonymous \
+  +app_update "${STEAMAPPID}" ${STEAMAPPBRANCH:+-beta "$STEAMAPPBRANCH"} validate \
+  +quit
 fi
 
 
