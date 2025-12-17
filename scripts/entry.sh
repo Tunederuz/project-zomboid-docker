@@ -20,8 +20,8 @@ NEED_UPDATE=0
 #                                   #
 #####################################
 
-if [ "$FORCEDUPDATE" = "1" ]; then
-  echo "FORCEDUPDATE enabled"
+if [ "$FORCEUPDATE" = "1" ]; then
+  echo "FORCEUPDATE enabled"
   NEED_UPDATE=1
 elif [ -z "$(ls -A "$STEAMAPPDIR" 2>/dev/null)" ]; then
   echo "Install directory empty, downloading server"
@@ -121,7 +121,7 @@ if [ -n "${SERVERNAME}" ]; then
   ARGS="${ARGS} -servername \"${SERVERNAME}\""
 else
   # If not servername is set, use the default name in the next step
-  SERVERNAME="servertest"
+  SERVERNAME="pz-dedicated-server"
 fi
 
 # If preset is set, then the config file is generated when it doesn't exists or SERVERPRESETREPLACE is set to True.
